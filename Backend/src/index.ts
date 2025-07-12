@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { userRoutes } from './routes/users';
-import { skillRoutes } from './routes/skills';
-import { swapRoutes } from './routes/swap';
-import { feedbackRoutes } from './routes/feedback';
-import { adminRoutes } from './routes/admin';
+import { userRouter } from './routes/users';
+import { skillRouter } from './routes/skills';
+import { swapRouter } from './routes/swap';
+import { feedbackRouter } from './routes/feedback';
+import { adminRouter } from './routes/admin';
 
 const app = new Hono();
 
@@ -13,11 +13,11 @@ app.use('*', cors());
 app.use('*', logger());
 
 // Route groups
-app.route('/api/users', userRoutes);
-app.route('/api/skills', skillRoutes);
-app.route('/api/swap', swapRoutes);
-app.route('/api/feedback', feedbackRoutes);
-app.route('/api/admin', adminRoutes);
+app.route('/api/users', userRouter);
+app.route('/api/skills', skillRouter);
+app.route('/api/swap', swapRouter);
+app.route('/api/feedback', feedbackRouter);
+app.route('/api/admin', adminRouter);
 
 // Root route
 app.get('/', (c) => c.text('🚀 Skill Swap API is running!'));

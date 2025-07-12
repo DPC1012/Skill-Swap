@@ -2,15 +2,15 @@ import { Hono } from "hono";
 import { getPrisma } from "../prisma/client";
 import { sign } from "hono/jwt";
 
-export const userRouter = new Hono<{
+export const authRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
   };
 }>();
 
-// Signup
-userRouter.post("/signup", async (c) => {
+// Signup route
+authRouter.post("/signup", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
 
@@ -21,23 +21,21 @@ userRouter.post("/signup", async (c) => {
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) return c.json({ error: "Email already exists" }, 400);
+  if (existing) {
+    return c.json({ error: "Email already exists" }, 400);
+  }
 
+  // ⚠️ Storing plain password (unsafe for production)
   const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password, // Stored as plain text (⚠️ okay only for testing)
-    },
+    data: { name, email, password },
   });
 
   const token = await sign({ id: user.id, role: user.role }, c.env.JWT_SECRET);
-
   return c.json({ token, user });
 });
 
-// Login
-userRouter.post("/login", async (c) => {
+// Login route
+authRouter.post("/login", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
 
@@ -48,11 +46,11 @@ userRouter.post("/login", async (c) => {
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
+
   if (!user || user.password !== password) {
     return c.json({ error: "Invalid credentials" }, 401);
   }
 
   const token = await sign({ id: user.id, role: user.role }, c.env.JWT_SECRET);
-
   return c.json({ token, user });
 });
