@@ -2,10 +2,11 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "skill-swap-backend",
   "main": "src/index.ts",
-  "compatibility_date": "2025-07-12"
+  "compatibility_date": "2025-07-12",
+  "vars": {"JWT_SECRET" : "", "DATABASE_URL" : "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RfaWQiOjEsInNlY3VyZV9rZXkiOiJza19zVGUxOXl3MVVQOTA3WENTemRzSlciLCJhcGlfa2V5IjoiMDFKWllHVEVHWkNUWk04Tlk1REs2N0hGV0MiLCJ0ZW5hbnRfaWQiOiI0ZGVmMDViYzlkMjA4ZWNkMThmYzY2ZWM0MjMxMzg0MDc0YmFlM2E3YmVmMjkxMGE4ZDRiMDNjMzA0ZTRhMzc4IiwiaW50ZXJuYWxfc2VjcmV0IjoiYmM5MTgyMzAtZjVhOS00ZjJkLWI0MGMtMWZhMjA2Y2M5NjhiIn0.ndFqaqlIsNRou5FUnazcr6ZweaWElzSuM3kCXyUwMFs"}
   // "compatibility_flags": [
   //   "nodejs_compat"
-  // ],
+  // ], 
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
