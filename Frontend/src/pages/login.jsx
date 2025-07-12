@@ -1,15 +1,31 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+   const [credentials, setCredentials] = useState({ email: "", password: "" });
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", credentials);
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/login`,
+        credentials
+      );
+
+      console.log("Login successful:", res.data);
+      alert("Login successful!");
+      // localStorage.setItem("token", res.data.token); // Optional
+      // redirect to dashboard or home page
+
+    } catch (error) {
+      console.error("Login failed:", error.response?.data || error.message);
+      alert("Login failed. Please check your email or password.");
+    }
   };
 
   return (

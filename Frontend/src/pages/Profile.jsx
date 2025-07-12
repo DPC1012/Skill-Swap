@@ -36,7 +36,7 @@ const Profile = () => {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold mr-4">User Profile</h1>
           <div className="flex gap-4 items-center">
-            <Link to="/request-swap" className="text-blue-600">
+            <Link to="/Accept" className="text-blue-600">
               Swap Request
             </Link>
             <Link to="/" className="text-blue-600">

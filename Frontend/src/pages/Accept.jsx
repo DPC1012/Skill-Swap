@@ -1,28 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const dummyRequests = [
-  {
-    id: 1,
-    name: 'Marc Demo',
-    status: 'Pending',
-    rating: 3.8,
-    offeredSkills: ['JavaScript'],
-    wantedSkills: ['Photoshop'],
-    photo: 'https://via.placeholder.com/100'
-  },
-  {
-    id: 2,
-    name: 'John Doe',
-    status: 'Rejected',
-    rating: 3.8,
-    offeredSkills: [],
-    wantedSkills: [],
-    photo: 'https://via.placeholder.com/100'
-  }
-];
+import axios from 'axios';
 
 const Accept = () => {
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/requests`);
+        setRequests(res.data);
+      } catch (err) {
+        console.error("Failed to fetch requests:", err);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-black p-6 mt-12">
       <div className="max-w-4xl mx-auto border border-gray-300 rounded-xl p-6 shadow-lg bg-white">
@@ -54,7 +49,7 @@ const Accept = () => {
         </div>
 
         {/* Request Cards */}
-        {dummyRequests.map((req) => (
+        {requests.map((req) => (
           <div key={req.id} className="border border-gray-300 rounded-lg p-4 mb-4 flex justify-between items-center">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-400">
@@ -68,7 +63,13 @@ const Accept = () => {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-medium">Status: <span className={`font-semibold ${req.status === 'Pending' ? 'text-yellow-400' : req.status === 'Rejected' ? 'text-red-500' : 'text-green-600'}`}>{req.status}</span></p>
+              <p className="font-medium">
+                Status: <span className={`font-semibold ${
+                  req.status === 'Pending' ? 'text-yellow-400' :
+                  req.status === 'Rejected' ? 'text-red-500' :
+                  'text-green-600'
+                }`}>{req.status}</span>
+              </p>
               {req.status === 'Pending' && (
                 <div className="mt-2 flex gap-2">
                   <button className="text-violet-600 font-medium cursor-pointer">Accept</button>

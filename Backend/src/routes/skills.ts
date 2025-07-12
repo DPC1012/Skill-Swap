@@ -7,47 +7,50 @@ export const skillRouter = new Hono<{
   };
 }>();
 
-// Add a skill
+// POST /skills - Add a skill
 skillRouter.post("/", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
-  const body = await c.req.json();
-
-  const { name, description, userId, type } = body;
+  const { name, description, userId, type } = await c.req.json();
 
   if (!name || !userId || !type || !["OFFERED", "WANTED"].includes(type)) {
-    return c.json({ error: "Missing or invalid fields" }, 400);
+    return c.json(
+      { error: "Missing or invalid fields. 'name', 'userId', and valid 'type' required." },
+      400
+    );
   }
 
-const existing = await prisma.skill.findFirst({
-  where: { name },
-});
+  // Check if skill already exists
+  const existingSkill = await prisma.skill.findFirst({ where: { name } });
 
-let skill;
+  const skill = existingSkill
+    ? await prisma.skill.update({
+        where: { id: existingSkill.id },
+        data: {
+          usersOffering: type === "OFFERED" ? { connect: { id: userId } } : undefined,
+          usersWanting: type === "WANTED" ? { connect: { id: userId } } : undefined,
+        },
+      })
+    : await prisma.skill.create({
+        data: {
+          name,
+          description,
+          usersOffering: type === "OFFERED" ? { connect: { id: userId } } : undefined,
+          usersWanting: type === "WANTED" ? { connect: { id: userId } } : undefined,
+        },
+      });
 
-if (existing) {
-  skill = existing;
-} else {
-  skill = await prisma.skill.create({
-    data: {
-      name,
-      description,
-      usersOffering: type === "OFFERED" ? { connect: { id: userId } } : undefined,
-      usersWanting: type === "WANTED" ? { connect: { id: userId } } : undefined,
-    },
-  });
-}
   return c.json(skill);
 });
 
-// Search skills
+// GET /skills/search?q=... - Search for skills
 skillRouter.get("/search", async (c) => {
-  const q = c.req.query("q") || "";
   const prisma = getPrisma(c.env.DATABASE_URL);
+  const query = c.req.query("q") || "";
 
-  const results = await prisma.skill.findMany({
+  const skills = await prisma.skill.findMany({
     where: {
       name: {
-        contains: q,
+        contains: query,
         mode: "insensitive",
       },
     },
@@ -57,5 +60,5 @@ skillRouter.get("/search", async (c) => {
     },
   });
 
-  return c.json(results);
+  return c.json(skills);
 });
